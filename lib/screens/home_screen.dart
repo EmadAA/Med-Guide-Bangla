@@ -14,6 +14,8 @@ class _HomePageState extends State<HomePage> {
   List<dynamic> allData = [];
   List<dynamic> filteredData = [];
 
+  final ScrollController _scrollController = ScrollController();
+
   final nameEnController = TextEditingController();
   final nameBnController = TextEditingController();
   final symptomController = TextEditingController();
@@ -38,7 +40,7 @@ class _HomePageState extends State<HomePage> {
     final symptom = symptomController.text.trim();
     final action = actionController.text.trim();
 
-    // 🚫 Empty search
+    // 🚫 Empty search alert
     if (nameEn.isEmpty && nameBn.isEmpty && symptom.isEmpty && action.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -71,8 +73,8 @@ class _HomePageState extends State<HomePage> {
       if (action.isNotEmpty) {
         match &= (item['কার্যকারিতা'] as List).any(
           (a) =>
-              a['category'].contains(action) ||
-              a['description'].contains(action),
+              a['category'].toString().contains(action) ||
+              a['description'].toString().contains(action),
         );
       }
 
@@ -100,6 +102,8 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: const Text('Med Guide Bangla'),
         backgroundColor: const Color.fromARGB(255, 114, 221, 210),
+        elevation: 4,
+        centerTitle: true,
         actions: [
           IconButton(
             icon: const Icon(Icons.list),
@@ -111,12 +115,14 @@ class _HomePageState extends State<HomePage> {
       ),
       body: GestureDetector(
         onTap: () {
-          FocusScope.of(context).unfocus(); // 🔥 hide keyboard on outside tap
+          FocusScope.of(context).unfocus();
         },
         child: SingleChildScrollView(
+          controller: _scrollController,
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
+              // 🔹 TOP ROW
               Row(
                 children: [
                   Expanded(
@@ -124,8 +130,11 @@ class _HomePageState extends State<HomePage> {
                       controller: nameEnController,
                       decoration: InputDecoration(
                         labelText: 'Medicine Name',
+                        filled: true,
+                        fillColor: Colors.grey.shade100,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
                         ),
                       ),
                     ),
@@ -136,38 +145,51 @@ class _HomePageState extends State<HomePage> {
                       controller: nameBnController,
                       decoration: InputDecoration(
                         labelText: 'ওষুধের নাম',
+                        filled: true,
+                        fillColor: Colors.grey.shade100,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
                         ),
                       ),
                     ),
                   ),
                 ],
               ),
+
               const SizedBox(height: 12),
 
               TextField(
                 controller: symptomController,
                 decoration: InputDecoration(
                   labelText: 'লক্ষণ / Symptom',
+                  filled: true,
+                  fillColor: Colors.grey.shade100,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
                   ),
                 ),
               ),
+
               const SizedBox(height: 12),
 
               TextField(
                 controller: actionController,
                 decoration: InputDecoration(
                   labelText: 'কার্যকারিতা / Effectiveness',
+                  filled: true,
+                  fillColor: Colors.grey.shade100,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
                   ),
                 ),
               ),
+
               const SizedBox(height: 20),
 
+              // 🔹 BUTTONS
               Row(
                 children: [
                   Expanded(
@@ -175,6 +197,15 @@ class _HomePageState extends State<HomePage> {
                       onPressed: () {
                         FocusScope.of(context).unfocus();
                         search();
+
+                        // 🔥 AUTO SCROLL
+                        Future.delayed(const Duration(milliseconds: 200), () {
+                          _scrollController.animateTo(
+                            300, // 🔥 adjust this value
+                            duration: const Duration(milliseconds: 500),
+                            curve: Curves.easeInOut,
+                          );
+                        });
                       },
                       icon: const Icon(Icons.search),
                       label: const Text('Search'),
@@ -185,7 +216,10 @@ class _HomePageState extends State<HomePage> {
                           221,
                           210,
                         ),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                     ),
                   ),
@@ -194,6 +228,12 @@ class _HomePageState extends State<HomePage> {
                     child: ElevatedButton(
                       onPressed: reset,
                       child: const Text("Reset"),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -201,8 +241,35 @@ class _HomePageState extends State<HomePage> {
 
               const SizedBox(height: 20),
 
-              if (filteredData.isEmpty) const Text("No Result Found"),
+              // 🔹 RESULT COUNT
+              if (filteredData.isNotEmpty)
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "${filteredData.length} results found",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
 
+              const SizedBox(height: 10),
+
+              // 🔹 EMPTY STATE
+              if (filteredData.isEmpty)
+                Column(
+                  children: const [
+                    Icon(Icons.search_off, size: 50, color: Colors.grey),
+                    SizedBox(height: 10),
+                    Text(
+                      "No Result Found",
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  ],
+                ),
+
+              // 🔹 RESULTS
               ...filteredData.map((item) {
                 return MedicineCard(
                   medicine: item,
