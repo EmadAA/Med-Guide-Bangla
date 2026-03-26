@@ -100,7 +100,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Med Guide Bangla'),
+        title: const Text('Model Key Note '),
         backgroundColor: const Color.fromARGB(255, 114, 221, 210),
         elevation: 4,
         centerTitle: true,
