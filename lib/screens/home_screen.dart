@@ -109,97 +109,110 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: nameEnController,
-                    decoration: InputDecoration(
-                      labelText: 'Medicine Name',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus(); // 🔥 hide keyboard on outside tap
+        },
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: nameEnController,
+                      decoration: InputDecoration(
+                        labelText: 'Medicine Name',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: TextField(
-                    controller: nameBnController,
-                    decoration: InputDecoration(
-                      labelText: 'ওষুধের নাম',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: TextField(
+                      controller: nameBnController,
+                      decoration: InputDecoration(
+                        labelText: 'ওষুধের নাম',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
+                ],
+              ),
+              const SizedBox(height: 12),
 
-            TextField(
-              controller: symptomController,
-              decoration: InputDecoration(
-                labelText: 'লক্ষণ / Symptom',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+              TextField(
+                controller: symptomController,
+                decoration: InputDecoration(
+                  labelText: 'লক্ষণ / Symptom',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 12),
+              const SizedBox(height: 12),
 
-            TextField(
-              controller: actionController,
-              decoration: InputDecoration(
-                labelText: 'কার্যকারিতা / Effectiveness',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+              TextField(
+                controller: actionController,
+                decoration: InputDecoration(
+                  labelText: 'কার্যকারিতা / Effectiveness',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 20),
+              const SizedBox(height: 20),
 
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: search,
-                    icon: const Icon(Icons.search),
-                    label: const Text('Search'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 114, 221, 210),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        FocusScope.of(context).unfocus();
+                        search();
+                      },
+                      icon: const Icon(Icons.search),
+                      label: const Text('Search'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(
+                          255,
+                          114,
+                          221,
+                          210,
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: reset,
-                    child: const Text("Reset"),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: reset,
+                      child: const Text("Reset"),
+                    ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
 
-            const SizedBox(height: 20),
+              const SizedBox(height: 20),
 
-            if (filteredData.isEmpty) const Text("No Result Found"),
+              if (filteredData.isEmpty) const Text("No Result Found"),
 
-            ...filteredData.map((item) {
-              return MedicineCard(
-                medicine: item,
-                nameQuery: nameEnController.text + nameBnController.text,
-                symptomQuery: symptomController.text,
-                actionQuery: actionController.text,
-              );
-            }).toList(),
-          ],
+              ...filteredData.map((item) {
+                return MedicineCard(
+                  medicine: item,
+                  nameQuery: nameEnController.text + nameBnController.text,
+                  symptomQuery: symptomController.text,
+                  actionQuery: actionController.text,
+                );
+              }).toList(),
+            ],
+          ),
         ),
       ),
     );
